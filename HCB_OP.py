@@ -2,7 +2,7 @@ from Lib import *
 
 flag_list = []
 
-def OPARG_NULL(data, mode, offset_dict):
+def OPARG_NULL(data, mode, offset_dict, **kwargs):
     if mode == "d":
         return ""
     elif mode == "c":
@@ -10,7 +10,7 @@ def OPARG_NULL(data, mode, offset_dict):
     elif mode == "l":
         return 0
 
-def OPARG_I8I8(data, mode, offset_dict):
+def OPARG_I8I8(data, mode, offset_dict, **kwargs):
     if mode == "d":
         i1 = data.readU8()
         i2 = data.readU8()
@@ -21,7 +21,7 @@ def OPARG_I8I8(data, mode, offset_dict):
     elif mode == "l":
         return 2
 
-def OPARG_X32(data, mode, offset_dict):#返回一个偏移，从偏移处读取函数
+def OPARG_X32(data, mode, offset_dict, **kwargs):#返回一个偏移，从偏移处读取函数
     if mode == "d":
         offset = data.readU32()
         return f"offset_{offset}"
@@ -32,7 +32,7 @@ def OPARG_X32(data, mode, offset_dict):#返回一个偏移，从偏移处读取�
     elif mode == "l":
         return 4
         
-def OPARG_I16(data, mode, offset_dict):
+def OPARG_I16(data, mode, offset_dict, **kwargs):
     if mode == "d":
         i = data.read(2)
         return f"{from_bytes(i)}"
@@ -42,7 +42,7 @@ def OPARG_I16(data, mode, offset_dict):
     elif mode == "l":
         return 2
 
-def OPARG_I32(data, mode, offset_dict):
+def OPARG_I32(data, mode, offset_dict, **kwargs):
     if mode == "d":
         return f"{data.readU32()}"
     elif mode == "c":
@@ -50,7 +50,7 @@ def OPARG_I32(data, mode, offset_dict):
     elif mode == "l":
         return 4
 
-def OPARG_I8(data, mode, offset_dict):
+def OPARG_I8(data, mode, offset_dict, **kwargs):
     if mode == "d":
         return f"{data.readU8()}"
     elif mode == "c":
@@ -58,13 +58,14 @@ def OPARG_I8(data, mode, offset_dict):
     elif mode == "l":
         return 1
 
-def OPARG_STRING(data, mode, offset_dict):
+def OPARG_STRING(data, mode, offset_dict, **kwargs):
+    encoding = kwargs["encoding"]
     if mode == "d":
         return data.readString()
     elif mode == "c":
-        return to_bytes(len(data.encode("932")) + 1, 1) + data.encode("932") + b"\x00"
+        return to_bytes(len(data.encode(encoding)) + 1, 1) + data.encode(encoding) + b"\x00"
     elif mode == "l":
-        return len(data.encode("932")) + 2
+        return len(data.encode(encoding)) + 2
 
 OPList = [
     [ 0x00, "nop", OPARG_NULL ],
